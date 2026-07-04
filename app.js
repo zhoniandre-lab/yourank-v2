@@ -1,3 +1,5 @@
+import { GoogleGenAI } from "@google/generative-ai";
+
 document.addEventListener('DOMContentLoaded', () => {
     const keywordInput = document.getElementById('keywordInput');
     const countrySelect = document.getElementById('countrySelect');
@@ -16,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyBtn = document.getElementById('emergencyBtn');
     const emergencyResult = document.getElementById('emergencyResult');
 
-    // DATA KUNCI MASTER
+    // API KEY DATA INDUK UTAMA
     const GOOGLE_KEY = "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk";
 
     auditBtn.addEventListener('click', async () => {
@@ -25,16 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const lang = langSelect.value;
 
         if (!keyword) {
-            alert('Masukkan kata kunci dulu, Bos!');
+            alert('Masukkan kata kunci target dulu, Bos!');
             return;
         }
 
         auditBtn.disabled = true;
-        auditBtn.innerText = 'MENJALANKAN ANALISIS DATA...';
+        auditBtn.innerText = 'MENGEKSEKUSI INFILTRASI JARINGAN DATA REAL-TIME...';
         resultSection.classList.remove('hidden');
 
         try {
-            // TAHAP 1: AMBIL DATA KOMPETITOR LANGSUNG DARI YOUTUBE
+            // TAHAP 1: AMBIL DATA KOMPETITOR DARI YOUTUBE API
             const ytUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(keyword)}&type=video&regionCode=${country}&relevanceLanguage=${lang}&key=${GOOGLE_KEY}`;
             const ytRes = await fetch(ytUrl);
             if (!ytRes.ok) throw new Error("Gagal mengambil data dari API YouTube.");
@@ -48,8 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 competitorList.innerHTML = '<div>Tidak ada kompetitor langsung, beralih ke analisis mandiri.</div>';
             }
 
-            // TAHAP 2: TEMBAK KE INTI KECERDASAN GEMINI VIA JALUR TIKUS (CORS PROXY)
-            bulletStatus.innerText = '🧠 Menembus proteksi CORS via secure tunnel...';
+            // TAHAP 2: KONEKSI INTELLIGENCE VIA SDK RESMI GOOGLE (ANTI-CORS MUTLAK)
+            bulletStatus.innerText = '🧠 Mengaktifkan Inti Kecerdasan Google AI...';
+
+            // Menginisialisasi SDK bawaan Google untuk bypass proteksi CORS browser secara legal
+            const ai = new GoogleGenAI({ apiKey: GOOGLE_KEY });
+            const model = ai.getGenerativeModel({ 
+                model: "gemini-1.5-flash",
+                generationConfig: { responseMimeType: "application/json" }
+            });
             
             const promptSistem = `Anda adalah sistem pakar SEO YouTube tingkat tinggi. Analisis kata kunci ini secara mendalam untuk mendominasi algoritma: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
             Gunakan data kompetitor saat ini sebagai pembanding: ${JSON.stringify(comps)}.
@@ -68,39 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret rombak metadata jika 1 jam pertama views mandek"
             }`;
 
-            const targetGeminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
+            const result = await model.generateContent(promptSistem);
+            let textResponse = result.response.text();
             
-            // Menggunakan proxy AllOrigins untuk membungkus request agar lolos dari blokir browser/CORS
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetGeminiUrl)}`;
-
-            const aiRes = await fetch(proxyUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptSistem }] }],
-                        generationConfig: { responseMimeType: "application/json" }
-                    })
-                })
-            });
-
-            if (!aiRes.ok) throw new Error("Gagal melewati jalur proxy aman.");
-
-            const proxyData = await aiRes.json();
-            // AllOrigins mengembalikan data dalam bentuk string di dalam field 'contents'
-            const geminiRawData = JSON.parse(proxyData.contents);
-            
-            if (!geminiRawData.candidates || geminiRawData.candidates.length === 0) {
-                throw new Error("Respon dari inti kecerdasan kosong.");
-            }
-
-            let textResponse = geminiRawData.candidates[0].content.parts[0].text;
+            // Pembersihan ekstra jika AI menyertakan penanda markdown json secara tidak sengaja
             textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
             const payload = JSON.parse(textResponse);
 
-            // TAMPILKAN SELURUH DATA KE PANEL DASHBOARD BOS
+            // TAMPILKAN HASILNYA KE DASHBOARD
             semanticAnalysis.innerHTML = payload.analisis_semantik;
             fixTitle.innerHTML = `
                 <div style="margin-bottom:12px; padding-bottom:6px; border-bottom:1px dashed #4b5563;"><b>[PILIHAN A - CTR TINGGI]</b><br>${payload.judul_a}</div>
@@ -119,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error(err);
-            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 TUNNEL UTAMA TERBATASI</span>';
-            alert('Sistem sedang mengkalibrasi rute: ' + err.message);
+            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 KONEKSI UTAMA TERPUTUS</span>';
+            alert('Error Analisis: ' + err.message);
         } finally {
             auditBtn.disabled = false;
             auditBtn.innerText = 'TEMBAK PELURU ALGORITMA';

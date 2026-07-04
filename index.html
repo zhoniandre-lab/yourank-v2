@@ -4,121 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALGORITMA INTELLIGENCE SUITE v3.0</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google AI SDK Import Map (Kunci Anti-CORS Resmi) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <style>
+        body { background-color: #0b0f19; color: #f3f4f6; font-family: 'Segoe UI', Roboto, sans-serif; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
 </head>
-<body>
-
-    <div class="container">
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        
         <!-- HEADER UTAMA -->
-        <header class="main-header">
-            <h1>🛡️ ALGORITMA INTELLIGENCE SUITE v3.0</h1>
-            <p class="subtitle">Sistem Penetrasi Metadata & Arsitek Visual Otomatis - Produksi 2026</p>
-        </header>
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-400 to-blue-500">
+                <i class="fa-solid fa-shield-halved mr-2 text-red-500"></i>ALGORITMA INTELLIGENCE SUITE v3.0
+            </h1>
+            <p class="text-xs text-gray-400 mt-2 tracking-widest uppercase">Sistem Penetrasi Metadata & Arsitektur Visual Otomatis - Produksi 2026</p>
+        </div>
 
-        <!-- PANEL INPUT KATA KUNCI & PREFERENSI -->
-        <div class="card border-gold">
-            <h2>🔑 INPUT KATA KUNCI UTAMA</h2>
-            <div class="form-group">
-                <input type="text" id="keywordInput" placeholder="Masukkan kata kunci target Anda di sini, Bos..." autofocus />
+        <!-- PANEL INPUT KATA KUNCI -->
+        <div class="glass-panel rounded-xl p-6 shadow-2xl border-t-4 border-amber-500 mb-6">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-key mr-2"></i>Input Kata Kunci Utama</h2>
+            <div class="mb-4">
+                <input type="text" id="keywordInput" placeholder="Contoh: Ibu maafkan aku / Cara budidaya lele" class="w-full bg-[#0f172a] border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-amber-500 transition-all font-semibold">
             </div>
             
-            <div class="form-row">
-                <div class="form-group flex-1">
-                    <label for="countrySelect">📍 Wilayah Server Target:</label>
-                    <select id="countrySelect">
-                        <option value="id">Indonesia (ID)</option>
-                        <option value="us">United States (US)</option>
-                        <option value="my">Malaysia (MY)</option>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1 font-bold"><i class="fa-solid fa-globe mr-1"></i> Wilayah Server Target:</label>
+                    <select id="countrySelect" class="w-full bg-[#0f172a] border border-gray-700 rounded-lg p-2 text-sm text-gray-300">
+                        <option value="ID">Indonesia (ID)</option>
+                        <option value="US">United States (US)</option>
+                        <option value="MY">Malaysia (MY)</option>
                     </select>
                 </div>
-                <div class="form-group flex-1">
-                    <label for="langSelect">🗣️ Bahasa Indeks:</label>
-                    <select id="langSelect">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1 font-bold"><i class="fa-solid fa-language mr-1"></i> Bahasa Indeks:</label>
+                    <select id="langSelect" class="w-full bg-[#0f172a] border border-gray-700 rounded-lg p-2 text-sm text-gray-300">
                         <option value="id">Bahasa Indonesia</option>
                         <option value="en">English</option>
+                        <option value="ms">Bahasa Melayu</option>
                     </select>
                 </div>
             </div>
 
-            <button id="auditBtn" class="btn-primary">TEMBAK PELURU ALGORITMA GLOBAL</button>
+            <button id="auditBtn" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-black tracking-widest p-4 rounded-lg shadow-lg hover:shadow-amber-500/20 transition-all cursor-pointer uppercase text-sm">
+                TEMBAK PELURU ALGORITMA
+            </button>
         </div>
 
-        <!-- PANEL UTAMA HASIL PARSING -->
-        <div id="resultSection" class="hidden">
+        <!-- LIVE STATUS HUD -->
+        <div id="bulletStatus" class="text-center text-xs font-mono tracking-widest text-cyan-400 my-4 uppercase animate-pulse">
+            IDLE - MENUNGGU PERINTAH EKSEKUSI BOS...
+        </div>
+
+        <!-- SECTION HASIL (HIDDEN AWAL) -->
+        <div id="resultSection" class="hidden space-y-6">
             
-            <!-- PANEL STATUS INTERLOCKING INTERN -->
-            <div class="card border-blue status-panel">
-                <div id="bulletStatus" class="status-title">🔵 MENUNGGU INISIALISASI INPUT...</div>
-                <div id="targetRoute" class="status-desc">Jalur jaringan server siap diarahkan.</div>
-            </div>
-
-            <!-- MODUL 1 & 2: EKSTRAKSI KOMPETITOR & SEMANTIK -->
-            <div class="grid-2">
-                <div class="card">
-                    <h3>👥 MODUL 1: EKSTRAKSI 10 KOMPETITOR UTAMA</h3>
-                    <div id="competitorList" class="log-container"></div>
-                </div>
-                <div class="card">
-                    <h3>🧠 MODUL 2: PARSING SEMANTIK AI</h3>
-                    <div id="semanticAnalysis" class="analysis-box"></div>
+            <!-- PANEL KOMPETITOR (REAL-TIME YOUTUBE DATA) -->
+            <div class="glass-panel rounded-xl p-5 border-l-4 border-blue-500">
+                <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-3"><i class="fa-brands fa-youtube mr-2"></i>Data Infiltrasi Kompetitor Teratas (Live YouTube)</h3>
+                <div id="competitorList" class="text-xs text-gray-300 space-y-2">
+                    <!-- Diisi otomatis via JavaScript -->
                 </div>
             </div>
 
-            <!-- MODUL 3: HASIL RACIKAN METADATA BYPASS -->
-            <div class="card border-green">
-                <h2>📋 MODUL 3: FORMULA METADATA INJEKSI (ANTI-FILTER)</h2>
+            <!-- MODUL 2: PARSING SEMANTIK AI -->
+            <div class="glass-panel rounded-xl p-6 border-l-4 border-purple-500">
+                <h3 class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-brain mr-2"></i>Modul 2: Parsing Semantik AI & Psikologi Judul</h3>
+                <div id="semanticAnalysis" class="text-sm leading-relaxed text-gray-300 bg-[#0f172a] p-4 rounded-lg border border-gray-800">
+                    <!-- Diisi otomatis via JavaScript -->
+                </div>
+            </div>
+
+            <!-- MODUL 3: FORMULA METADATA CO-RECOMENDATION -->
+            <div class="glass-panel rounded-xl p-6 border-l-4 border-emerald-500 space-y-4">
+                <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-tags mr-2"></i>Modul 3: Formula Metadata & Pengunci Rekomendasi</h3>
                 
-                <div class="metadata-block">
-                    <label>🔤 FORMULA JUDUL KANDIDAT (CTR TINGGI / SUGGESTED):</label>
-                    <div id="fixTitle" class="output-box code-style"></div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-1">STRUKTUR JUDUL HASIL KALIBRASI:</label>
+                    <div id="fixTitle" class="bg-[#0f172a] border border-gray-800 p-3 rounded-lg text-sm font-bold text-white"></div>
                 </div>
 
-                <div class="metadata-block">
-                    <label>📝 DESKRIPSI STRUKTUR (SUNTIKAN INTERAKSI 1 JAM):</label>
-                    <textarea id="fixDesc" class="output-textarea" readonly></textarea>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-1">DESKRIPSI INTEGRASI RETENSI (SIAP COPY):</label>
+                    <textarea id="fixDesc" rows="6" class="w-full bg-[#0f172a] border border-gray-800 p-3 rounded-lg text-xs font-mono text-gray-300 focus:outline-none"></textarea>
                 </div>
 
-                <div class="metadata-block">
-                    <label>🏷️ TAGS TERSEMBUNYI (PENGUNCI INDEKS BOT):</label>
-                    <div id="fixTags" class="output-box tags-style"></div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-1">TAGS METADATA (SEPARATOR KOMA):</label>
+                    <div id="fixTags" class="bg-[#0f172a] border border-gray-800 p-3 rounded-lg text-xs font-mono text-cyan-400 select-all"></div>
                 </div>
 
-                <div class="metadata-block">
-                    <div id="uploadTime" class="time-box"></div>
-                </div>
+                <div id="uploadTime" class="text-xs font-black text-emerald-400 tracking-wider"></div>
             </div>
 
-            <!-- MODUL 4: GENERATOR VISUAL THUMBNAIL REAL-TIME (HIGH CTR) -->
-            <div class="card border-purple">
-                <h2>🖼️ MODUL 4: ARSITEK VISUAL THUMBNAIL (REAL API ENGINE)</h2>
-                <p class="instruction">Sistem langsung memproses pembuatan visual ke API AI dengan resolusi tinggi berdasarkan psikologi penonton niche terkait.</p>
-                
-                <div class="thumbnail-flex">
-                    <div class="thumb-box">
-                        <span class="label-thumb">🎬 UKURAN BERANDA (16:9 - 1280x720)</span>
-                        <div id="thumbLongCanvas" class="canvas-box"></div>
-                        <button id="downloadLongBtn" class="btn-secondary" disabled>⬇️ DOWNLOAD THUMBNAIL 16:9</button>
+            <!-- MODUL 4: ARSITEK CETAK VISUAL THUMBNAIL -->
+            <div class="glass-panel rounded-xl p-6 border-l-4 border-pink-500">
+                <h3 class="text-xs font-bold text-pink-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-palette mr-2"></i>Modul 4: Arsitek Cetak Visual Thumbnail (Prompt AI)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-xs text-gray-400 mb-2 font-bold">[PROMPT VISUAL VIDEO PANJANG - 16:9]</span>
+                        <div id="thumbLongCanvas" class="min-h-[80px]"></div>
                     </div>
-                    
-                    <div class="thumb-box">
-                        <span class="label-thumb">📱 UKURAN SHORTS (9:16 - 1080x1920)</span>
-                        <div id="thumbShortCanvas" class="canvas-box"></div>
-                        <button id="downloadShortBtn" class="btn-secondary" disabled>⬇️ DOWNLOAD SHORTS 9:16</button>
+                    <div>
+                        <span class="block text-xs text-gray-400 mb-2 font-bold">[PROMPT VISUAL SHORTS - 9:16]</span>
+                        <div id="thumbShortCanvas" class="min-h-[80px]"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- MODUL 6: METODE IMPLEMENTASI DARURAT 1 JAM -->
-            <div class="card border-red">
-                <h2>⚠️ MODUL 6: EMERGENCY BYPASS (TRAFFIC STUCK RECOVERY)</h2>
-                <p class="instruction">Aktifkan tombol di bawah ini jika dalam 1 jam pertama video Anda tertahan atau gagal menembus rekomendasi beranda.</p>
-                <button id="emergencyBtn" class="btn-danger">PAKE TOMBOL DARURAT 1 JAM</button>
-                <div id="emergencyResult" class="emergency-box hidden"></div>
+            <!-- TOMBOL EMERGENCY STRATEGY -->
+            <div class="pt-2">
+                <button id="emergencyBtn" class="w-full bg-gradient-to-r from-red-900 to-red-700 hover:from-red-800 hover:to-red-600 text-white font-bold text-xs tracking-widest p-3 rounded-lg transition-all cursor-pointer shadow-md uppercase">
+                    ⚠️ AKTIFKAN STRATEGI PENYELAMATAN (JIKA 1 JAM SEPI VIEWS)
+                </button>
+                <div id="emergencyResult" class="hidden mt-3 bg-red-950/50 border border-red-800/60 p-4 rounded-lg text-xs leading-relaxed text-red-200"></div>
             </div>
 
         </div>
+
     </div>
 
-    <script src="app.js"></script>
+    <!-- Script Utama -->
+    <script type="module" src="app.js"></script>
 </body>
 </html>

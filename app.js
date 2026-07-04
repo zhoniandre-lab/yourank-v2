@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 competitorList.innerHTML = '<div>Tidak ada kompetitor langsung, beralih ke analisis mandiri.</div>';
             }
 
-            // TAHAP 2: TEMBAK LANGSUNG KE INTI KECERDASAN GEMINI (TANPA LEWAT FOLDER API VERCEL)
-            bulletStatus.innerText = '🧠 Menghubungkan langsung ke Core Intelijen Gemini...';
+            // TAHAP 2: TEMBAK KE INTI KECERDASAN GEMINI VIA JALUR TIKUS (CORS PROXY)
+            bulletStatus.innerText = '🧠 Menembus proteksi CORS via secure tunnel...';
             
             const promptSistem = `Anda adalah sistem pakar SEO YouTube tingkat tinggi. Analisis kata kunci ini secara mendalam untuk mendominasi algoritma: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
             Gunakan data kompetitor saat ini sebagai pembanding: ${JSON.stringify(comps)}.
@@ -68,28 +68,35 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret rombak metadata jika 1 jam pertama views mandek"
             }`;
 
-            // Koneksi Direct ke REST API Google Gemini Resmi
-            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
+            const targetGeminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
             
-            const aiRes = await fetch(geminiUrl, {
+            // Menggunakan proxy AllOrigins untuk membungkus request agar lolos dari blokir browser/CORS
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetGeminiUrl)}`;
+
+            const aiRes = await fetch(proxyUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: promptSistem }] }],
-                    generationConfig: { responseMimeType: "application/json" }
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptSistem }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
                 })
             });
 
-            if (!aiRes.ok) throw new Error("Gagal mendapatkan respons langsung dari server AI.");
+            if (!aiRes.ok) throw new Error("Gagal melewati jalur proxy aman.");
 
-            const aiData = await aiRes.json();
+            const proxyData = await aiRes.json();
+            // AllOrigins mengembalikan data dalam bentuk string di dalam field 'contents'
+            const geminiRawData = JSON.parse(proxyData.contents);
             
-            if (!aiData.candidates || aiData.candidates.length === 0) {
+            if (!geminiRawData.candidates || geminiRawData.candidates.length === 0) {
                 throw new Error("Respon dari inti kecerdasan kosong.");
             }
 
-            let textResponse = aiData.candidates[0].content.parts[0].text;
-            // Pembersihan jika AI tidak sengaja menyisipkan tag markdown
+            let textResponse = geminiRawData.candidates[0].content.parts[0].text;
             textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
             const payload = JSON.parse(textResponse);
 
@@ -112,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error(err);
-            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 KONEKSI UTAMA TERPUTUS</span>';
-            alert('Terjadi kesalahan sistem: ' + err.message);
+            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 TUNNEL UTAMA TERBATASI</span>';
+            alert('Sistem sedang mengkalibrasi rute: ' + err.message);
         } finally {
             auditBtn.disabled = false;
             auditBtn.innerText = 'TEMBAK PELURU ALGORITMA';

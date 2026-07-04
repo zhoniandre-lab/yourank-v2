@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const auditBtn = document.getElementById('auditBtn');
     const resultSection = document.getElementById('resultSection');
     const bulletStatus = document.getElementById('bulletStatus');
-    const targetRoute = document.getElementById('targetRoute');
     const competitorList = document.getElementById('competitorList');
     const semanticAnalysis = document.getElementById('semanticAnalysis');
     const fixTitle = document.getElementById('fixTitle');
@@ -17,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyBtn = document.getElementById('emergencyBtn');
     const emergencyResult = document.getElementById('emergencyResult');
 
-    // API KEY DATA UTAMA
+    // API KEY DATA INDUK UTAMA
     const GOOGLE_KEY = "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk";
 
     auditBtn.addEventListener('click', async () => {
@@ -26,16 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const lang = langSelect.value;
 
         if (!keyword) {
-            alert('Masukkan kata kunci dulu, Bos!');
+            alert('Masukkan kata kunci target dulu, Bos!');
             return;
         }
 
         auditBtn.disabled = true;
-        auditBtn.innerText = 'MENJALANKAN ANALISIS DATA...';
+        auditBtn.innerText = 'MENGEKSEKUSI INFILTRASI JARINGAN DATA REAL-TIME...';
         resultSection.classList.remove('hidden');
 
         try {
-            // TAHAP 1: AMBIL DATA REKOMENDASI KOMPETITOR DARI YOUTUBE
+            // TAHAP 1: EKSTRAKSI DATA KOMPETITOR DARI YOUTUBE API
             const ytUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(keyword)}&type=video&regionCode=${country}&relevanceLanguage=${lang}&key=${GOOGLE_KEY}`;
             const ytRes = await fetch(ytUrl);
             if (!ytRes.ok) throw new Error("Gagal mengambil data dari API YouTube.");
@@ -49,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 competitorList.innerHTML = '<div>Tidak ada kompetitor langsung, beralih ke analisis mandiri.</div>';
             }
 
-            // TAHAP 2: PROSES KE GEMINI LEWAT BACKEND VERCEL FUNCTION (ANTI-CORS)
+            // TAHAP 2: KIRIM KE CORE INTELLIGENCE GEMINI VIA BACKEND SECURE
             bulletStatus.innerText = '🧠 Mengirim data ke gerbang aman Vercel Backend...';
             
             const promptSistem = `Anda adalah sistem pakar SEO YouTube tingkat tinggi. Analisis kata kunci ini secara mendalam untuk mendominasi algoritma: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
@@ -69,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret rombak metadata jika 1 jam pertama views mandek"
             }`;
 
-            // URL menunjuk langsung ke fungsi folder /api/gemini.js Bos
+            // Arahkan request langsung ke internal API Vercel Serverless Function
             const backendUrl = window.location.origin + '/api/gemini';
 
             const aiRes = await fetch(backendUrl, {
@@ -93,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
             const payload = JSON.parse(textResponse);
 
-            // TAMPILKAN HASIL KE DASHBOARD UI BOS
+            // TAMPILKAN DATA HASIL DI UI DASHBOARD
             semanticAnalysis.innerHTML = payload.analisis_semantik;
             fixTitle.innerHTML = `
                 <div style="margin-bottom:12px; padding-bottom:6px; border-bottom:1px dashed #4b5563;"><b>[PILIHAN A - CTR TINGGI]</b><br>${payload.judul_a}</div>

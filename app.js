@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyBtn = document.getElementById('emergencyBtn');
     const emergencyResult = document.getElementById('emergencyResult');
 
-    // API KEY DATA INDUK UTAMA
+    // DATA KUNCI MASTER
     const GOOGLE_KEY = "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk";
 
     auditBtn.addEventListener('click', async () => {
@@ -25,16 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const lang = langSelect.value;
 
         if (!keyword) {
-            alert('Masukkan kata kunci target dulu, Bos!');
+            alert('Masukkan kata kunci dulu, Bos!');
             return;
         }
 
         auditBtn.disabled = true;
-        auditBtn.innerText = 'MENGEKSEKUSI INFILTRASI JARINGAN DATA REAL-TIME...';
+        auditBtn.innerText = 'MENJALANKAN ANALISIS DATA...';
         resultSection.classList.remove('hidden');
 
         try {
-            // TAHAP 1: EKSTRAKSI DATA KOMPETITOR DARI YOUTUBE API
+            // TAHAP 1: AMBIL DATA KOMPETITOR LANGSUNG DARI YOUTUBE
             const ytUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(keyword)}&type=video&regionCode=${country}&relevanceLanguage=${lang}&key=${GOOGLE_KEY}`;
             const ytRes = await fetch(ytUrl);
             if (!ytRes.ok) throw new Error("Gagal mengambil data dari API YouTube.");
@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 competitorList.innerHTML = '<div>Tidak ada kompetitor langsung, beralih ke analisis mandiri.</div>';
             }
 
-            // TAHAP 2: KIRIM KE CORE INTELLIGENCE GEMINI VIA BACKEND SECURE
-            bulletStatus.innerText = '🧠 Mengirim data ke gerbang aman Vercel Backend...';
+            // TAHAP 2: TEMBAK LANGSUNG KE INTI KECERDASAN GEMINI (TANPA LEWAT FOLDER API VERCEL)
+            bulletStatus.innerText = '🧠 Menghubungkan langsung ke Core Intelijen Gemini...';
             
             const promptSistem = `Anda adalah sistem pakar SEO YouTube tingkat tinggi. Analisis kata kunci ini secara mendalam untuk mendominasi algoritma: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
             Gunakan data kompetitor saat ini sebagai pembanding: ${JSON.stringify(comps)}.
@@ -68,31 +68,32 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret rombak metadata jika 1 jam pertama views mandek"
             }`;
 
-            // Arahkan request langsung ke internal API Vercel Serverless Function
-            const backendUrl = window.location.origin + '/api/gemini';
-
-            const aiRes = await fetch(backendUrl, {
+            // Koneksi Direct ke REST API Google Gemini Resmi
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
+            
+            const aiRes = await fetch(geminiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    prompt: promptSistem,
-                    apiKey: GOOGLE_KEY
+                    contents: [{ parts: [{ text: promptSistem }] }],
+                    generationConfig: { responseMimeType: "application/json" }
                 })
             });
 
-            if (!aiRes.ok) throw new Error("Gagal memproses data di gerbang aman Vercel.");
+            if (!aiRes.ok) throw new Error("Gagal mendapatkan respons langsung dari server AI.");
 
             const aiData = await aiRes.json();
             
             if (!aiData.candidates || aiData.candidates.length === 0) {
-                throw new Error("Respon kosong dari inti kecerdasan. Silakan coba kembali.");
+                throw new Error("Respon dari inti kecerdasan kosong.");
             }
 
             let textResponse = aiData.candidates[0].content.parts[0].text;
+            // Pembersihan jika AI tidak sengaja menyisipkan tag markdown
             textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
             const payload = JSON.parse(textResponse);
 
-            // TAMPILKAN DATA HASIL DI UI DASHBOARD
+            // TAMPILKAN SELURUH DATA KE PANEL DASHBOARD BOS
             semanticAnalysis.innerHTML = payload.analisis_semantik;
             fixTitle.innerHTML = `
                 <div style="margin-bottom:12px; padding-bottom:6px; border-bottom:1px dashed #4b5563;"><b>[PILIHAN A - CTR TINGGI]</b><br>${payload.judul_a}</div>
@@ -111,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error(err);
-            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 GERBANG AMAN TERPUTUS</span>';
-            alert('Terjadi kesalahan komunikasi data: ' + err.message);
+            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 KONEKSI UTAMA TERPUTUS</span>';
+            alert('Terjadi kesalahan sistem: ' + err.message);
         } finally {
             auditBtn.disabled = false;
             auditBtn.innerText = 'TEMBAK PELURU ALGORITMA';

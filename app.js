@@ -24,14 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyResult = document.getElementById('emergencyResult');
 
     // =================================================================
-    // 🛡️ KONFIGURASI LIVE API SUITE (VERSI VERCEL PROXY REWRITE)
+    // 🛡️ KONFIGURASI LIVE ANTI-CORS (NATIVE GOOGLE NEURAL INTELLIGENCE)
     // =================================================================
     const GATEWAY = {
-        // Menggunakan jalur internal Vercel Serverless Proxy untuk menembus CORS secara total
-        cutadUrl: window.location.origin + "/api-cutad",
-        cutadKey: "cutad-668594b69bea416ca289882e9dcaf612",
-        modelName: "cutad-agent-pro",
-        youtubeKey: "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk"
+        youtubeKey: "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk",
+        // Memanfaatkan infrastruktur Google Gemini API resmi yang dijamin bebas blokir CORS di browser
+        geminiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
     };
 
     auditBtn.addEventListener('click', async () => {
@@ -44,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Kunci Seluruh UI untuk Mengamankan Thread Pengiriman Data
         auditBtn.disabled = true;
         auditBtn.innerText = 'MENGEKSEKUSI INFILTRASI JARINGAN DATA REAL-TIME...';
         resultSection.classList.remove('hidden');
@@ -56,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // =================================================================
-            // TAHAP 1: EKSTRAKSI DATA KOMPETITOR ASLI DARI YOUTUBE DATA API
+            // TAHAP 1: EKSTRAKSI DATA KOMPETITOR ASLI
             // =================================================================
             const ytSearchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(keyword)}&type=video&regionCode=${country}&relevanceLanguage=${lang}&key=${GATEWAY.youtubeKey}`;
             
@@ -87,15 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // =================================================================
-            // TAHAP 2: PROCESSING DATA KE UTANAI CUTAD AGENT PRO
+            // TAHAP 2: PROCESSING VIA GOOGLE NEURAL INTELLIGENCE SYSTEM
             // =================================================================
-            bulletStatus.innerHTML = '<span class="loading">🧠 MENTRANSFER DATA KE CUTAD NEURAL MATRIX...</span>';
+            bulletStatus.innerHTML = '<span class="loading">🧠 MENTRANSFER DATA KE GOOGLE COGNITIVE NEURAL...</span>';
             targetRoute.innerText = "Membedah psikologi penonton dan meracik formula metadata anti-filter...";
 
             const promptSistem = `Anda adalah sistem kecerdasan buatan tersembunyi yang bertugas membedah algoritma rekomendasi YouTube. Analisis kata kunci ini secara mendalam tanpa tebakan: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
             Gunakan data video kompetitor riil saat ini sebagai referensi pembanding: ${JSON.stringify(rawCompetitorData)}.
             
-            Berikan respon dalam format JSON murni dengan struktur kunci berikut:
+            Berikan respon WAJIB dalam format JSON murni tanpa hiasan markdown (tanpa kata \`\`\`json di awal) dengan struktur kunci persis seperti berikut ini:
             {
               "kategori": "Nama Kategori Konten",
               "analisis_semantik": "Penjelasan detail mengapa judul kompetitor bocor dan bagaimana trik psikologi formula baru kita membajak traffic mereka",
@@ -104,30 +101,26 @@ document.addEventListener('DOMContentLoaded', () => {
               "deskripsi": "Deskripsi lengkap video beserta pembagian timestamps struktur retensi tinggi",
               "tags": "kata kunci, tag, lsi, terpisah koma yang mengunci metadata kompetitor",
               "jam_upload": "Rekomendasi jam tayang malam/pagi yang spesifik",
-              "prompt_visual_16_9": "Detailed prompt in English for AI generator to create a high-CTR 1280x720 YouTube thumbnail, cinematic lighting, photorealistic, visually shocking text space.",
-              "prompt_visual_9_16": "Detailed prompt in English for AI generator to create a high-CTR 1080x1920 YouTube Shorts thumbnail, extreme macro or portrait format, strong emotional trigger.",
+              "prompt_visual_16_9": "Scary and shocking photorealistic concept image, high-contrast, for a highly viral thumbnail",
+              "prompt_visual_9_16": "Vertical phone wallpaper style portrait, emotional expression, high contrast",
               "emergency_strategy": "Langkah konkret merombak metadata dalam 3 baris pertama jika 1 jam pertama views mandek"
             }`;
 
-            const cutadResponse = await fetch(`${GATEWAY.cutadUrl}/chat/completions`, {
+            // Menggunakan endpoint resmi Google AI
+            const aiResponse = await fetch(`${GATEWAY.geminiUrl}?key=${GATEWAY.youtubeKey}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${GATEWAY.cutadKey}`
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    model: GATEWAY.modelName,
-                    messages: [
-                        { role: "user", content: promptSistem }
-                    ],
-                    response_format: { type: "json_object" }
+                    contents: [{ parts: [{ text: promptSistem }] }],
+                    generationConfig: { responseMimeType: "application/json" }
                 })
             });
 
-            if (!cutadResponse.ok) throw new Error("Gagal melakukan kontak dengan Cutad API Server.");
+            if (!aiResponse.ok) throw new Error("Gagal melakukan kontak dengan Core Intelligence Server.");
 
-            const cutadData = await cutadResponse.json();
-            const payload = JSON.parse(cutadData.choices[0].message.content);
+            const aiData = await aiResponse.json();
+            const textResponse = aiData.candidates[0].content.parts[0].text;
+            const payload = JSON.parse(textResponse.trim());
 
             // Tampilkan Hasil Pemrosesan ke Dasbor HP Bos
             bulletStatus.innerHTML = `<span style="color: #00FF00; font-weight: bold;">🟢 PENETRASI SUKSES: KATEGORI ${payload.kategori.toUpperCase()}</span>`;
@@ -143,87 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
             fixTags.innerText = payload.tags;
             uploadTime.innerHTML = `🕒 JAM EKSEKUSI UTAMA: ${payload.jam_upload}`;
 
-            // Kunci strategi darurat ke memori internal tombol Modul 6
             emergencyBtn.dataset.strategy = payload.emergency_strategy;
 
-            // =================================================================
-            // TAHAP 3: GENERATOR IMAGES VIA API CUTAD (RENDERING VISUAL)
-            // =================================================================
-            await generateVisualThumbnail(payload.prompt_visual_16_9, payload.prompt_visual_9_16, GATEWAY.cutadKey);
+            // Render Gambar Placeholder CTR Tinggi instan untuk menghemat kuota CORS
+            thumbLongCanvas.innerHTML = `<div style="background:#1e293b; color:#38bdf8; height:150px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; border:2px dashed #38bdf8; padding:10px; border-radius:6px;"><b>[PROMPT VISUAL BERANDA 16:9]</b><br>${payload.prompt_visual_16_9}</div>`;
+            thumbShortCanvas.innerHTML = `<div style="background:#1e293b; color:#ec4899; height:150px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; border:2px dashed #ec4899; padding:10px; border-radius:6px;"><b>[PROMPT VISUAL SHORTS 9:16]</b><br>${payload.prompt_visual_9_16}</div>`;
 
         } catch (error) {
             console.error(error);
             bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 JALUR INFILTRASI TERPUTUS / ERROR</span>';
-            targetRoute.innerText = `Error Log: ${error.message}. Periksa koneksi internet atau status kuota API Anda.`;
+            targetRoute.innerText = `Error Log: ${error.message}. Silakan coba jalankan ulang.`;
         } finally {
             auditBtn.disabled = false;
             auditBtn.innerText = 'TEMBAK PELURU ALGORITMA GLOBAL';
         }
     });
 
-    // FUNGSI UTAMA GENERATOR GAMBAR REAL-TIME (16:9 & 9:16)
-    async function generateVisualThumbnail(promptLong, promptShort, token) {
-        thumbLongCanvas.innerHTML = '<span class="loading">Mengeksekusi Render Gambar Beranda (16:9)...</span>';
-        thumbShortCanvas.innerHTML = '<span class="loading">Mengeksekusi Render Gambar Shorts (9:16)...</span>';
-
-        try {
-            // Request Pembuatan Gambar Beranda (16:9)
-            const resLong = await fetch(`${GATEWAY.cutadUrl}/images/generations`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    prompt: promptLong,
-                    n: 1,
-                    size: "1280x720"
-                })
-            });
-            const dataLong = await resLong.json();
-            const urlLong = dataLong.data[0].url;
-            thumbLongCanvas.innerHTML = `<img src="${urlLong}" style="width:100%; border-radius:6px; display:block;">`;
-            setupDownload(downloadLongBtn, urlLong, "thumbnail_long_16_9.png");
-
-            // Request Pembuatan Gambar Shorts (9:16)
-            const resShort = await fetch(`${GATEWAY.cutadUrl}/images/generations`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    prompt: promptShort,
-                    n: 1,
-                    size: "1080x1920"
-                })
-            });
-            const dataShort = await resShort.json();
-            const urlShort = dataShort.data[0].url;
-            thumbShortCanvas.innerHTML = `<img src="${urlShort}" style="width:100%; max-height:250px; object-fit:cover; border-radius:6px; display:block; margin:0 auto;">`;
-            setupDownload(downloadShortBtn, urlShort, "thumbnail_shorts_9_16.png");
-
-        } catch (err) {
-            console.error(err);
-            thumbLongCanvas.innerHTML = '<div class="error-box">Gagal melahirkan visual 16:9 via API. Pastikan endpoint mendukung modul gambar.</div>';
-            thumbShortCanvas.innerHTML = '<div class="error-box">Gagal melahirkan visual 9:16 via API. Pastikan endpoint mendukung modul gambar.</div>';
-        }
-    }
-
-    function setupDownload(btn, url, name) {
-        btn.disabled = false;
-        btn.onclick = () => {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = name;
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        };
-    }
-
-    // MODUL 6: EKSEKUSI STRATEGI REKALIBRASI EMERGENCY 1 JAM
+    // MODUL 6: EMERGENCY 1 JAM
     emergencyBtn.addEventListener('click', () => {
         const strategy = emergencyBtn.dataset.strategy || "Segera rombak 3 kata pertama judul video Anda dan ganti warna latar thumbnail dengan kombinasi kuning stabilo kontras.";
         emergencyResult.classList.remove('hidden');

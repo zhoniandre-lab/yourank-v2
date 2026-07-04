@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyBtn = document.getElementById('emergencyBtn');
     const emergencyResult = document.getElementById('emergencyResult');
 
+    // API KEY RESMI GOOGLE
     const GOOGLE_KEY = "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk";
 
     auditBtn.addEventListener('click', async () => {
@@ -34,39 +35,91 @@ document.addEventListener('DOMContentLoaded', () => {
         resultSection.classList.remove('hidden');
 
         try {
-            // TAHAP 1: YOUTUBE API
+            // TAHAP 1: AMBIL DATA REKOMENDASI KOMPETITOR DARI YOUTUBE
             const ytUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(keyword)}&type=video&regionCode=${country}&relevanceLanguage=${lang}&key=${GOOGLE_KEY}`;
             const ytRes = await fetch(ytUrl);
+            if (!ytRes.ok) throw new Error("Gagal mengambil data dari API YouTube.");
             const ytData = await ytRes.json();
             
-            let comps = ytData.items.map(i => ({ title: i.snippet.title, channel: i.snippet.channelTitle }));
-            competitorList.innerHTML = comps.map(c => `<div><b>${c.channel}</b>: ${c.title}</div>`).join('');
+            let comps = [];
+            if (ytData.items && ytData.items.length > 0) {
+                comps = ytData.items.map(i => ({ title: i.snippet.title, channel: i.snippet.channelTitle }));
+                competitorList.innerHTML = comps.map(c => `<div style="margin-bottom:8px; padding:6px; background:#1e293b; border-radius:4px;"><b>${c.channel}</b>: ${c.title}</div>`).join('');
+            } else {
+                competitorList.innerHTML = '<div>Tidak ada kompetitor langsung, beralih ke analisis mandiri.</div>';
+            }
 
-            // TAHAP 2: GEMINI AI VIA JEMBATAN ANTI-CORS
-            bulletStatus.innerText = '🧠 Membedah algoritma...';
+            // TAHAP 2: PROSES LANGSUNG KE EMPIRE INTERN GOOGLE GEMINI AI
+            bulletStatus.innerText = '🧠 Mentransfer data ke Core Intelligence...';
             
-            const prompt = `Analisis keyword "${keyword}" untuk negara ${country}. Berikan respon JSON murni: { "kategori": "", "analisis_semantik": "", "judul_a": "", "judul_b": "", "deskripsi": "", "tags": "", "jam_upload": "", "prompt_visual_16_9": "", "prompt_visual_9_16": "", "emergency_strategy": "" }`;
+            const promptSistem = `Anda adalah sistem pakar SEO YouTube tingkat tinggi. Analisis kata kunci ini secara mendalam untuk mendominasi algoritma: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
+            Gunakan data kompetitor saat ini sebagai pembanding: ${JSON.stringify(comps)}.
             
-            const geminiTarget = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(geminiTarget + '&method=POST&body=' + JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }))}`;
+            Berikan respon WAJIB dalam format JSON murni tanpa hiasan markdown (TIDAK BOLEH menggunakan tanda \`\`\`json di awal atau \`\`\` di akhir) dengan struktur kunci tepat seperti ini:
+            {
+              "kategori": "Nama Kategori Konten",
+              "analisis_semantik": "Penjelasan detail trik psikologi judul kompetitor dan strategi kita membajak traffic mereka",
+              "judul_a": "Formula Judul Opsi A (Trik CTR Ekstrem/FOMO)",
+              "judul_b": "Formula Judul Opsi B (Trik Pembajakan Rekomendasi Video Besar)",
+              "deskripsi": "Deskripsi lengkap video beserta pembagian timestamps struktur retensi tinggi",
+              "tags": "kata kunci, tag, terpisah koma mengunci metadata kompetitor",
+              "jam_upload": "Rekomendasi jam tayang spesifik",
+              "prompt_visual_16_9": "Konsep prompt gambar visual thumbnail beranda 16:9",
+              "prompt_visual_9_16": "Konsep prompt gambar visual thumbnail shorts 9:16",
+              "emergency_strategy": "Langkah konkret rombak metadata jika 1 jam pertama views mandek"
+            }`;
 
-            const aiRes = await fetch(proxyUrl);
+            // Menggunakan endpoint resmi Google API dengan parameter mode no-cors diatur oleh manipulasi payload standar
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
+
+            const aiRes = await fetch(geminiUrl, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: promptSistem }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json"
+                    }
+                })
+            });
+
+            if (!aiRes.ok) throw new Error("Gagal terhubung ke server kecerdasan Google.");
+
             const aiData = await aiRes.json();
-            const payload = JSON.parse(JSON.parse(aiData.contents).candidates[0].content.parts[0].text.replace(/```json/g, "").replace(/```/g, ""));
+            
+            if (!aiData.candidates || aiData.candidates.length === 0) {
+                throw new Error("Respon kosong dari AI. Silakan coba lagi.");
+            }
 
-            // TAMPILAN
-            semanticAnalysis.innerText = payload.analisis_semantik;
-            fixTitle.innerHTML = `A: ${payload.judul_a}<br><br>B: ${payload.judul_b}`;
+            let textResponse = aiData.candidates[0].content.parts[0].text;
+            
+            // Pembersihan jika AI mengembalikan teks dengan pembungkus markdown
+            textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+            const payload = JSON.parse(textResponse);
+
+            // TAMPILKAN HASILNYA KE LAYAR HP BOS
+            semanticAnalysis.innerHTML = payload.analisis_semantik;
+            fixTitle.innerHTML = `
+                <div style="margin-bottom:12px; padding-bottom:6px; border-bottom:1px dashed #4b5563;"><b>[PILIHAN A - CTR TINGGI]</b><br>${payload.judul_a}</div>
+                <div><b>[PILIHAN B - REKOMENDASI]</b><br>${payload.judul_b}</div>
+            `;
             fixDesc.value = payload.deskripsi;
             fixTags.innerText = payload.tags;
-            uploadTime.innerText = payload.jam_upload;
-            thumbLongCanvas.innerText = payload.prompt_visual_16_9;
-            thumbShortCanvas.innerText = payload.prompt_visual_9_16;
+            uploadTime.innerHTML = `🕒 JAM EKSEKUSI UTAMA: ${payload.jam_upload}`;
+
             emergencyBtn.dataset.strategy = payload.emergency_strategy;
-            bulletStatus.innerText = '✅ Analisis Selesai!';
+
+            thumbLongCanvas.innerHTML = `<div style="background:#1e293b; padding:10px; font-size:12px; border:1px dashed #38bdf8; border-radius:4px;">${payload.prompt_visual_16_9}</div>`;
+            thumbShortCanvas.innerHTML = `<div style="background:#1e293b; padding:10px; font-size:12px; border:1px dashed #ec4899; border-radius:4px;">${payload.prompt_visual_9_16}</div>`;
+            
+            bulletStatus.innerHTML = '<span style="color: #00FF00; font-weight: bold;">🟢 PENETRASI ALGORITMA SUKSES</span>';
             
         } catch (err) {
-            bulletStatus.innerText = '❌ Error: ' + err.message;
+            console.error(err);
+            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 JALUR INFILTRASI TERPUTUS</span>';
+            alert('Terjadi kesalahan komunikasi data: ' + err.message);
         } finally {
             auditBtn.disabled = false;
             auditBtn.innerText = 'TEMBAK PELURU ALGORITMA';
@@ -74,7 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     emergencyBtn.addEventListener('click', () => {
+        const strategy = emergencyBtn.dataset.strategy || "Segera rombak judul dan ganti thumbnail video Anda.";
         emergencyResult.classList.remove('hidden');
-        emergencyResult.innerText = emergencyBtn.dataset.strategy;
+        emergencyResult.innerHTML = `<b>⚠️ STRATEGI PENYELAMATAN AKTIF:</b><br><br>${strategy}`;
     });
 });

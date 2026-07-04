@@ -1,7 +1,0 @@
-{
-  "name": "algoritma-intelligence-suite",
-  "version": "3.0.0",
-  "scripts": {
-    "build": "echo 'Building static suite...'"
-  }
-}

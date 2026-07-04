@@ -24,12 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyResult = document.getElementById('emergencyResult');
 
     // =================================================================
-    // 🛡️ KONFIGURASI LIVE ANTI-CORS (NATIVE GOOGLE NEURAL INTELLIGENCE)
+    // 🛡️ KONFIGURASI LIVE ANTI-CORS VIA VERCEL INTERNAL PROXY REWRITE
     // =================================================================
     const GATEWAY = {
         youtubeKey: "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk",
-        // Memanfaatkan infrastruktur Google Gemini API resmi yang dijamin bebas blokir CORS di browser
-        geminiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        // Menembak proksi internal Vercel untuk mengelabui proteksi CORS browser
+        geminiProxyUrl: window.location.origin + "/api-gemini/v1beta/models/gemini-1.5-flash:generateContent"
     };
 
     auditBtn.addEventListener('click', async () => {
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // =================================================================
-            // TAHAP 2: PROCESSING VIA GOOGLE NEURAL INTELLIGENCE SYSTEM
+            // TAHAP 2: PROCESSING VIA GOOGLE GEMINI PROXY (ANTI-CORS)
             // =================================================================
             bulletStatus.innerHTML = '<span class="loading">🧠 MENTRANSFER DATA KE GOOGLE COGNITIVE NEURAL...</span>';
             targetRoute.innerText = "Membedah psikologi penonton dan meracik formula metadata anti-filter...";
@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret merombak metadata dalam 3 baris pertama jika 1 jam pertama views mandek"
             }`;
 
-            // Menggunakan endpoint resmi Google AI
-            const aiResponse = await fetch(`${GATEWAY.geminiUrl}?key=${GATEWAY.youtubeKey}`, {
+            // Panggilan aman lewat Proksi internal Vercel
+            const aiResponse = await fetch(`${GATEWAY.geminiProxyUrl}?key=${GATEWAY.youtubeKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            if (!aiResponse.ok) throw new Error("Gagal melakukan kontak dengan Core Intelligence Server.");
+            if (!aiResponse.ok) throw new Error("Gagal melakukan kontak dengan Core Intelligence Server via Proxy.");
 
             const aiData = await aiResponse.json();
             const textResponse = aiData.candidates[0].content.parts[0].text;
@@ -138,14 +138,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             emergencyBtn.dataset.strategy = payload.emergency_strategy;
 
-            // Render Gambar Placeholder CTR Tinggi instan untuk menghemat kuota CORS
-            thumbLongCanvas.innerHTML = `<div style="background:#1e293b; color:#38bdf8; height:150px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; border:2px dashed #38bdf8; padding:10px; border-radius:6px;"><b>[PROMPT VISUAL BERANDA 16:9]</b><br>${payload.prompt_visual_16_9}</div>`;
-            thumbShortCanvas.innerHTML = `<div style="background:#1e293b; color:#ec4899; height:150px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; border:2px dashed #ec4899; padding:10px; border-radius:6px;"><b>[PROMPT VISUAL SHORTS 9:16]</b><br>${payload.prompt_visual_9_16}</div>`;
+            // Render Prompt Visual Instan untuk Thumbnails
+            thumbLongCanvas.innerHTML = `<div style="background:#1e293b; color:#38bdf8; height:150px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; border:2px dashed #38bdf8; padding:10px; border-radius:6px; overflow-y:auto;"><b>[PROMPT VISUAL BERANDA 16:9]</b><br>${payload.prompt_visual_16_9}</div>`;
+            thumbShortCanvas.innerHTML = `<div style="background:#1e293b; color:#ec4899; height:150px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; border:2px dashed #ec4899; padding:10px; border-radius:6px; overflow-y:auto;"><b>[PROMPT VISUAL SHORTS 9:16]</b><br>${payload.prompt_visual_9_16}</div>`;
 
         } catch (error) {
             console.error(error);
             bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 JALUR INFILTRASI TERPUTUS / ERROR</span>';
-            targetRoute.innerText = `Error Log: ${error.message}. Silakan coba jalankan ulang.`;
+            targetRoute.innerText = `Error Log: ${error.message}. Hubungi pusat data kembali.`;
         } finally {
             auditBtn.disabled = false;
             auditBtn.innerText = 'TEMBAK PELURU ALGORITMA GLOBAL';

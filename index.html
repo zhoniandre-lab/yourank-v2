@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGORITMA INTELLIGENCE SUITE v3.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER UTAMA -->
+        <header class="main-header">
+            <h1>🛡️ ALGORITMA INTELLIGENCE SUITE v3.0</h1>
+            <p class="subtitle">Sistem Penetrasi Metadata & Arsitek Visual Otomatis - Produksi 2026</p>
+        </header>
+
+        <!-- PANEL INPUT KATA KUNCI & PREFERENSI -->
+        <div class="card border-gold">
+            <h2>🔑 INPUT KATA KUNCI UTAMA</h2>
+            <div class="form-group">
+                <input type="text" id="keywordInput" placeholder="Masukkan kata kunci target Anda di sini, Bos..." autofocus />
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group flex-1">
+                    <label for="countrySelect">📍 Wilayah Server Target:</label>
+                    <select id="countrySelect">
+                        <option value="id">Indonesia (ID)</option>
+                        <option value="us">United States (US)</option>
+                        <option value="my">Malaysia (MY)</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label for="langSelect">🗣️ Bahasa Indeks:</label>
+                    <select id="langSelect">
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="auditBtn" class="btn-primary">TEMBAK PELURU ALGORITMA GLOBAL</button>
+        </div>
+
+        <!-- PANEL UTAMA HASIL PARSING -->
+        <div id="resultSection" class="hidden">
+            
+            <!-- PANEL STATUS INTERLOCKING INTERN -->
+            <div class="card border-blue status-panel">
+                <div id="bulletStatus" class="status-title">🔵 MENUNGGU INISIALISASI INPUT...</div>
+                <div id="targetRoute" class="status-desc">Jalur jaringan server siap diarahkan.</div>
+            </div>
+
+            <!-- MODUL 1 & 2: EKSTRAKSI KOMPETITOR & SEMANTIK -->
+            <div class="grid-2">
+                <div class="card">
+                    <h3>👥 MODUL 1: EKSTRAKSI 10 KOMPETITOR UTAMA</h3>
+                    <div id="competitorList" class="log-container"></div>
+                </div>
+                <div class="card">
+                    <h3>🧠 MODUL 2: PARSING SEMANTIK AI</h3>
+                    <div id="semanticAnalysis" class="analysis-box"></div>
+                </div>
+            </div>
+
+            <!-- MODUL 3: HASIL RACIKAN METADATA BYPASS -->
+            <div class="card border-green">
+                <h2>📋 MODUL 3: FORMULA METADATA INJEKSI (ANTI-FILTER)</h2>
+                
+                <div class="metadata-block">
+                    <label>🔤 FORMULA JUDUL KANDIDAT (CTR TINGGI / SUGGESTED):</label>
+                    <div id="fixTitle" class="output-box code-style"></div>
+                </div>
+
+                <div class="metadata-block">
+                    <label>📝 DESKRIPSI STRUKTUR (SUNTIKAN INTERAKSI 1 JAM):</label>
+                    <textarea id="fixDesc" class="output-textarea" readonly></textarea>
+                </div>
+
+                <div class="metadata-block">
+                    <label>🏷️ TAGS TERSEMBUNYI (PENGUNCI INDEKS BOT):</label>
+                    <div id="fixTags" class="output-box tags-style"></div>
+                </div>
+
+                <div class="metadata-block">
+                    <div id="uploadTime" class="time-box"></div>
+                </div>
+            </div>
+
+            <!-- MODUL 4: GENERATOR VISUAL THUMBNAIL REAL-TIME (HIGH CTR) -->
+            <div class="card border-purple">
+                <h2>🖼️ MODUL 4: ARSITEK VISUAL THUMBNAIL (REAL API ENGINE)</h2>
+                <p class="instruction">Sistem langsung memproses pembuatan visual ke API AI dengan resolusi tinggi berdasarkan psikologi penonton niche terkait.</p>
+                
+                <div class="thumbnail-flex">
+                    <div class="thumb-box">
+                        <span class="label-thumb">🎬 UKURAN BERANDA (16:9 - 1280x720)</span>
+                        <div id="thumbLongCanvas" class="canvas-box"></div>
+                        <button id="downloadLongBtn" class="btn-secondary" disabled>⬇️ DOWNLOAD THUMBNAIL 16:9</button>
+                    </div>
+                    
+                    <div class="thumb-box">
+                        <span class="label-thumb">📱 UKURAN SHORTS (9:16 - 1080x1920)</span>
+                        <div id="thumbShortCanvas" class="canvas-box"></div>
+                        <button id="downloadShortBtn" class="btn-secondary" disabled>⬇️ DOWNLOAD SHORTS 9:16</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODUL 6: METODE IMPLEMENTASI DARURAT 1 JAM -->
+            <div class="card border-red">
+                <h2>⚠️ MODUL 6: EMERGENCY BYPASS (TRAFFIC STUCK RECOVERY)</h2>
+                <p class="instruction">Aktifkan tombol di bawah ini jika dalam 1 jam pertama video Anda tertahan atau gagal menembus rekomendasi beranda.</p>
+                <button id="emergencyBtn" class="btn-danger">PAKE TOMBOL DARURAT 1 JAM</button>
+                <div id="emergencyResult" class="emergency-box hidden"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

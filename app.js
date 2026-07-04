@@ -24,10 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyResult = document.getElementById('emergencyResult');
 
     // =================================================================
-    // 🛡️ KONFIGURASI LIVE API SUITE (TERKUNCI & VALID)
+    // 🛡️ KONFIGURASI LIVE API SUITE (VERSI BYPASS CORS FIX)
     // =================================================================
     const GATEWAY = {
-        cutadUrl: "https://mimo.lokerin.net/v1",
+        // Menggunakan AllOrigins proxy sebagai jalur alternatif penembus blokir CORS browser
+        cutadUrl: "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://mimo.lokerin.net/v1"),
         cutadKey: "cutad-668594b69bea416ca289882e9dcaf612",
         modelName: "cutad-agent-pro",
         youtubeKey: "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk"
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Kunci Seluruh UI untuk Mengamankan Thread Pengiriman Data
         auditBtn.disabled = true;
-        auditBtn.innerText = 'MENGEKSEKUSI INFILTRASI JARRINGAN DATA REAL-TIME...';
+        auditBtn.innerText = 'MENGEKSEKUSI INFILTRASI JARINGAN DATA REAL-TIME...';
         resultSection.classList.remove('hidden');
 
         bulletStatus.innerHTML = '<span class="loading">📡 MENGHUBUNGKAN KE SERVER GOOGLE DATA API...</span>';
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // =================================================================
-            // TAHAP 2: PROCESSING DATA KE UTANAI CUTAD AGENT PRO via JSON OBJECT
+            // TAHAP 2: PROCESSING DATA KE UTANAI CUTAD AGENT PRO
             // =================================================================
             bulletStatus.innerHTML = '<span class="loading">🧠 MENTRANSFER DATA KE CUTAD NEURAL MATRIX...</span>';
             targetRoute.innerText = "Membedah psikologi penonton dan meracik formula metadata anti-filter...";
@@ -108,7 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret merombak metadata dalam 3 baris pertama jika 1 jam pertama views mandek"
             }`;
 
-            const cutadResponse = await fetch(`${GATEWAY.cutadUrl}/chat/completions`, {
+            // URL Endpoint dipadukan dengan AllOrigins Proxy untuk bypass CORS
+            const targetApiUrl = "https://mimo.lokerin.net/v1/chat/completions";
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetApiUrl);
+
+            const cutadResponse = await fetch(proxyUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -165,9 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
         thumbLongCanvas.innerHTML = '<span class="loading">Mengeksekusi Render Gambar Beranda (16:9)...</span>';
         thumbShortCanvas.innerHTML = '<span class="loading">Mengeksekusi Render Gambar Shorts (9:16)...</span>';
 
+        const targetImgUrl = "https://mimo.lokerin.net/v1/images/generations";
+        const proxyImgUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetImgUrl);
+
         try {
             // Request Pembuatan Gambar Beranda (16:9)
-            const resLong = await fetch(`${GATEWAY.cutadUrl}/images/generations`, {
+            const resLong = await fetch(proxyImgUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -185,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setupDownload(downloadLongBtn, urlLong, "thumbnail_long_16_9.png");
 
             // Request Pembuatan Gambar Shorts (9:16)
-            const resShort = await fetch(`${GATEWAY.cutadUrl}/images/generations`, {
+            const resShort = await fetch(proxyImgUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

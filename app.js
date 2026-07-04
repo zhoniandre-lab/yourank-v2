@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyResult = document.getElementById('emergencyResult');
 
     // =================================================================
-    // 🛡️ KONFIGURASI LIVE API SUITE (VERSI BYPASS CORS FIX)
+    // 🛡️ KONFIGURASI LIVE API SUITE (VERSI VERCEL PROXY REWRITE)
     // =================================================================
     const GATEWAY = {
-        // Menggunakan AllOrigins proxy sebagai jalur alternatif penembus blokir CORS browser
-        cutadUrl: "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://mimo.lokerin.net/v1"),
+        // Menggunakan jalur internal Vercel Serverless Proxy untuk menembus CORS secara total
+        cutadUrl: window.location.origin + "/api-cutad",
         cutadKey: "cutad-668594b69bea416ca289882e9dcaf612",
         modelName: "cutad-agent-pro",
         youtubeKey: "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk"
@@ -109,11 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret merombak metadata dalam 3 baris pertama jika 1 jam pertama views mandek"
             }`;
 
-            // URL Endpoint dipadukan dengan AllOrigins Proxy untuk bypass CORS
-            const targetApiUrl = "https://mimo.lokerin.net/v1/chat/completions";
-            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetApiUrl);
-
-            const cutadResponse = await fetch(proxyUrl, {
+            const cutadResponse = await fetch(`${GATEWAY.cutadUrl}/chat/completions`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -170,12 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
         thumbLongCanvas.innerHTML = '<span class="loading">Mengeksekusi Render Gambar Beranda (16:9)...</span>';
         thumbShortCanvas.innerHTML = '<span class="loading">Mengeksekusi Render Gambar Shorts (9:16)...</span>';
 
-        const targetImgUrl = "https://mimo.lokerin.net/v1/images/generations";
-        const proxyImgUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetImgUrl);
-
         try {
             // Request Pembuatan Gambar Beranda (16:9)
-            const resLong = await fetch(proxyImgUrl, {
+            const resLong = await fetch(`${GATEWAY.cutadUrl}/images/generations`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -193,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setupDownload(downloadLongBtn, urlLong, "thumbnail_long_16_9.png");
 
             // Request Pembuatan Gambar Shorts (9:16)
-            const resShort = await fetch(proxyImgUrl, {
+            const resShort = await fetch(`${GATEWAY.cutadUrl}/images/generations`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api-gemini/:path*",
-      "destination": "https://generativelanguage.googleapis.com/:path*"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }

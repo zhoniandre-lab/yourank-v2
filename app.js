@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emergencyBtn = document.getElementById('emergencyBtn');
     const emergencyResult = document.getElementById('emergencyResult');
 
-    // API KEY RESMI GOOGLE
+    // API KEY DATA UTAMA
     const GOOGLE_KEY = "AIzaSyDIiPKEONURqAQCGDAJ35W7MEXodvhuagk";
 
     auditBtn.addEventListener('click', async () => {
@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 competitorList.innerHTML = '<div>Tidak ada kompetitor langsung, beralih ke analisis mandiri.</div>';
             }
 
-            // TAHAP 2: PROSES LANGSUNG KE EMPIRE INTERN GOOGLE GEMINI AI
-            bulletStatus.innerText = '🧠 Mentransfer data ke Core Intelligence...';
+            // TAHAP 2: PROSES KE GEMINI LEWAT BACKEND VERCEL FUNCTION (ANTI-CORS)
+            bulletStatus.innerText = '🧠 Mengirim data ke gerbang aman Vercel Backend...';
             
             const promptSistem = `Anda adalah sistem pakar SEO YouTube tingkat tinggi. Analisis kata kunci ini secara mendalam untuk mendominasi algoritma: "${keyword}". Target Negara: ${country}, Bahasa: ${lang}. 
             Gunakan data kompetitor saat ini sebagai pembanding: ${JSON.stringify(comps)}.
@@ -69,37 +69,31 @@ document.addEventListener('DOMContentLoaded', () => {
               "emergency_strategy": "Langkah konkret rombak metadata jika 1 jam pertama views mandek"
             }`;
 
-            // Menggunakan endpoint resmi Google API dengan parameter mode no-cors diatur oleh manipulasi payload standar
-            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`;
+            // URL menunjuk langsung ke fungsi folder /api/gemini.js Bos
+            const backendUrl = window.location.origin + '/api/gemini';
 
-            const aiRes = await fetch(geminiUrl, {
+            const aiRes = await fetch(backendUrl, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: promptSistem }] }],
-                    generationConfig: {
-                        responseMimeType: "application/json"
-                    }
+                    prompt: promptSistem,
+                    apiKey: GOOGLE_KEY
                 })
             });
 
-            if (!aiRes.ok) throw new Error("Gagal terhubung ke server kecerdasan Google.");
+            if (!aiRes.ok) throw new Error("Gagal memproses data di gerbang aman Vercel.");
 
             const aiData = await aiRes.json();
             
             if (!aiData.candidates || aiData.candidates.length === 0) {
-                throw new Error("Respon kosong dari AI. Silakan coba lagi.");
+                throw new Error("Respon kosong dari inti kecerdasan. Silakan coba kembali.");
             }
 
             let textResponse = aiData.candidates[0].content.parts[0].text;
-            
-            // Pembersihan jika AI mengembalikan teks dengan pembungkus markdown
             textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
             const payload = JSON.parse(textResponse);
 
-            // TAMPILKAN HASILNYA KE LAYAR HP BOS
+            // TAMPILKAN HASIL KE DASHBOARD UI BOS
             semanticAnalysis.innerHTML = payload.analisis_semantik;
             fixTitle.innerHTML = `
                 <div style="margin-bottom:12px; padding-bottom:6px; border-bottom:1px dashed #4b5563;"><b>[PILIHAN A - CTR TINGGI]</b><br>${payload.judul_a}</div>
@@ -118,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error(err);
-            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 JALUR INFILTRASI TERPUTUS</span>';
+            bulletStatus.innerHTML = '<span style="color: #FF0000; font-weight: bold;">🔴 GERBANG AMAN TERPUTUS</span>';
             alert('Terjadi kesalahan komunikasi data: ' + err.message);
         } finally {
             auditBtn.disabled = false;
